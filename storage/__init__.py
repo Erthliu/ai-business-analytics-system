@@ -1,0 +1,1 @@
+"""Raw-input storage interfaces."""

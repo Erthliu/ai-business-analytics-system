@@ -1,0 +1,27 @@
+[project]
+name = "ai-business-analytics-system"
+version = "1.0.0"
+description = "A deterministic, lineage-aware business analytics workflow with optional provider boundaries."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+dependencies = [
+  "pandas==2.3.3",
+  "SQLAlchemy==2.0.52",
+  "psycopg[binary]==3.3.5",
+  "alembic==1.19.2",
+  "pydantic==2.13.5",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+exclude = [".venv", "work", ".test-tmp", ".pytest-tmp-release"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+
+[tool.pytest.ini_options]
+addopts = "-p no:cacheprovider"
+testpaths = ["tests"]
+markers = ["postgres: requires a real PostgreSQL database"]
