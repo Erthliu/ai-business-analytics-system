@@ -147,17 +147,18 @@ Production schema creation uses Alembic revisions `20260911_01` through `2026091
 
 ## Testing
 
-CI has three jobs on pushes and pull requests. A Docker Compose smoke job starts the committed
-PostgreSQL 16 service definition and queries the running server. The portable job runs Ruff and
-all tests not marked `postgres`. The PostgreSQL job starts PostgreSQL 16, applies migrations,
-runs PostgreSQL-only tests, then runs the complete suite. The PostgreSQL tests cover persistence,
-lineage, source-hash replay, concurrent duplicate ingestion, and optimistic workflow concurrency.
+CI runs three verification jobs on pushes and pull requests. A Docker Compose smoke job starts
+the committed PostgreSQL 16 service definition and queries the running server. The portable job
+runs Ruff and all tests not marked `postgres`. The PostgreSQL job starts PostgreSQL 16, applies
+migrations, runs PostgreSQL-only tests, then runs the complete suite. The PostgreSQL tests cover
+persistence, lineage, source-hash replay, concurrent duplicate ingestion, and optimistic workflow
+concurrency. On `main` pushes only, a fourth job creates `v1.0.0` once all three checks pass.
 
 Local release verification on September 12, 2026 used a clean Python 3.12 environment and a
 fresh isolated PostgreSQL 18.6 database. All nine migrations reached `20260911_09`, all five
 PostgreSQL-specific tests passed, and the complete suite passed 242/242. The dependency lock also
-passed `pip check`. PostgreSQL 16 remains the CI service target, and every release tag is gated on
-all three GitHub Actions jobs passing for the tagged commit.
+passed `pip check`. PostgreSQL 16 remains the CI service target, and the release tag is gated on
+all three verification jobs passing for the tagged commit.
 
 ## Persistence and Operations
 

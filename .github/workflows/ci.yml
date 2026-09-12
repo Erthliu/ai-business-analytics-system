@@ -2,10 +2,16 @@ name: CI
 
 on:
   push:
+    branches:
+      - "**"
   pull_request:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   compose:
@@ -73,3 +79,28 @@ jobs:
       - run: python -m alembic upgrade head
       - run: python -m pytest -q -m postgres
       - run: python -m pytest -q
+
+  release:
+    name: Tag v1.0.0 after green CI
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs:
+      - compose
+      - unit
+      - postgres
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create the first release tag once
+        run: |
+          if git show-ref --tags --verify --quiet refs/tags/v1.0.0; then
+            echo "v1.0.0 already exists; leaving it unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a v1.0.0 -m "Portfolio v1.0.0"
+          git push origin refs/tags/v1.0.0
